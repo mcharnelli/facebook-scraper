@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from json import JSONDecodeError
 from typing import Any, Dict, Optional
+from bs4 import BeautifulSoup
 
 from . import utils
 from .constants import FB_MOBILE_BASE_URL
@@ -57,6 +58,8 @@ class PostExtractor:
 
     more_url_regex = re.compile(r'(?<=…\s)<a href="([^"]+)')
     post_story_regex = re.compile(r'href="(\/story[^"]+)" aria')
+
+    
 
     def __init__(self, element, options, request_fn):
         self.element = element
@@ -176,6 +179,7 @@ class PostExtractor:
                 'text': text,
                 'post_text': post_text,
                 'shared_text': shared_text,
+                'raw_post': self.element,
             }
 
         return None
