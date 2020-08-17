@@ -12,6 +12,9 @@ from .fb_types import URL, RawPage, Page, RequestFunction, Response
 logger = logging.getLogger(__name__)
 
 
+def permalink_post_page(account: str, group_name: str, permalink_id: str, request_fn: RequestFunction):
+     return utils.urljoin(FB_MOBILE_BASE_URL, f'/{account}/groups/{group_name}/permalink/{permalink_id}')
+
 def iter_pages(account: str, request_fn: RequestFunction) -> Iterator[Page]:
     start_url = utils.urljoin(FB_MOBILE_BASE_URL, f'/{account}/posts/')
     return generic_iter_pages(start_url, PageParser, request_fn)
