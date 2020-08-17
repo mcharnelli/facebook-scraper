@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 # Typing
 PartialPost = Optional[Dict[str, Any]]
 
+def extract_permalink_post(raw_post: RawPost, options: Options, request_fn: RequestFunction) -> Post:
+    return PostExtractor(raw_post, options, request_fn).extract_post()
 
 def extract_post(raw_post: RawPost, options: Options, request_fn: RequestFunction) -> Post:
     return PostExtractor(raw_post, options, request_fn).extract_post()
