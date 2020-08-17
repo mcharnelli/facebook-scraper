@@ -10,7 +10,7 @@ from requests_html import HTMLSession
 from . import utils
 from .constants import DEFAULT_PAGE_LIMIT, FB_MOBILE_BASE_URL
 from .extractors import extract_group_post, extract_post
-from .page_iterators import iter_group_pages, iter_pages
+from .page_iterators import iter_group_pages, iter_pages, permalink_post_page
 from .fb_types import Post
 
 
@@ -44,12 +44,16 @@ class FacebookScraper:
         self.session = session
         self.requests_kwargs = requests_kwargs
 
+    def get_permalink_post(self, account:str, **kwargs):
+        page_fn = partial(permalink_post_page, account=account, request_fn=self.get)
+        return self._generic_get_posts(extract_post, page_fn, **kwargs)
+
     def get_posts(self, account: str, **kwargs) -> Iterator[Post]:
         iter_pages_fn = partial(iter_pages, account=account, request_fn=self.get)
         return self._generic_get_posts(extract_post, iter_pages_fn, **kwargs)
 
     def get_group_posts(self, group: str, **kwargs) -> Iterator[Post]:
-        iter_pages_fn = partial(iter_group_pages, group=group, request_fn=self.get)
+        iter_pages_fn = partial(iter_pages, group=group, request_fn=self.get)
         return self._generic_get_posts(extract_group_post, iter_pages_fn, **kwargs)
 
     def get(self, url, **kwargs):
@@ -80,8 +84,8 @@ class FacebookScraper:
             warnings.warn('login unsuccessful')
 
     def is_logged_in(self) -> bool:
-        response = self.get('https://m.facebook.com/settings')
-        return not response.url.startswith('https://m.facebook.com/login.php')
+        response = self.get('https://facebook.com/settings')
+        return not response.url.startswith('https://facebook.com/login.php')
 
     def _generic_get_posts(
         self, extract_post_fn, iter_pages_fn, page_limit=DEFAULT_PAGE_LIMIT, options=None
